@@ -1,0 +1,17 @@
+body{
+    font-family: 'Open Sans', sans-serif;
+    text-align: center;
+}
+
+#board{
+    background-color: var(--platinum);
+    border-bottom: 1px solid black;
+}
+
+h1{
+    margin-top: 2em;
+}
+
+:root{
+    --platinum: #E7EBE6;
+}
