@@ -1,6 +1,6 @@
 let board;
-let boardWidth = 750;
-let boardHeight = 250;
+const boardWidth = 750;
+const boardHeight = 250;
 let context;
 
 let devHeight = 94;
@@ -9,31 +9,31 @@ let devX = 50;
 let devY = boardHeight - devHeight;
 let devImg;
 
-let dev = {
+const dev = {
     x: devX,
     y: null,
     width: devWidth,
     height: devHeight
 }
 
-let bugsArray = [];
-let bug1Width = 55;
-let bug2Width = 69;
-let bug3Width = 102;
-let bug4Width = 69;
+const bugsArray = [];
+const bug1Width = 55;
+const bug2Width = 69;
+const bug3Width = 102;
+const bug4Width = 69;
 
-let bugHeight = 70;
-let bugX = 700;
-let bugY = boardHeight - bugHeight;
+const bugHeight = 70;
+const bugX = 700;
+const bugY = boardHeight - bugHeight;
 
 let bug1Img;
 let bug2Img;
 let bug3Img;
 let bug4Img;
 
-let velocityX = -8;
+const velocityX = -8;
 let velocityY = 0;
-let gravity = .4;
+const gravity = .4;
 
 let gameOver = false;
 let score = 0;
@@ -81,7 +81,7 @@ function update() {
     context.drawImage(devImg, dev.x, dev.y, dev.width, dev.height);
 
     for (let i = 0; i < bugsArray.length; i++) {
-        let bug = bugsArray[i];
+        const bug = bugsArray[i];
         bug.x += velocityX;
         context.drawImage(bug.img, bug.x, bug.y, bug.width, bug.height);
         
@@ -101,7 +101,7 @@ function update() {
     context.fillStyle = 'black';
     context.font = '20px Open Sans';
     context.fillText(`Score: ${score}`, 5, 20);
-    scoreboard();
+    score++;
 
 }
 
@@ -117,7 +117,7 @@ function moveDev(e) {
         velocityY = -10;
         context.clearRect(dev.x, dev.y, dev.width, dev.height);
         devImg.src = "./images/dev.png" 
-    } else if ((e.code == 'ArrowDown') && dev.y == devY) {
+    } else if (e.code == 'ArrowDown' && dev.y == devY) {
         dev.width = 50;
         dev.height = 50;
         devY = 200;
@@ -131,15 +131,16 @@ function placeBugs() {
         return;
     }
 
-    let bug = {
+    const bug = {
         img: null,
         x: bugX,
         y: null,
         width: null,
         height: bugHeight,
+        scored: false,
     }
 
-    let placeBugsChance = Math.random();
+    const placeBugsChance = Math.random();
 
     if (placeBugsChance > .70) {
         bug.img = bug3Img;
@@ -165,12 +166,6 @@ function placeBugs() {
 
     if (bugsArray.length > 5) {
         bugsArray.shift();
-    }
-}
-
-function scoreboard() {
-    if (bugsArray.shift) {
-        score++;  
     }
 }
 
