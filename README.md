@@ -32,5 +32,5 @@ We hope you enjoy playing our game as much as we enjoyed creating it!
 
 **Demo**
 
-You can view a live demo of the calculator app here: https://raissavml.github.io/dev_game/
+You can view a live demo of the game here: https://raissavml.github.io/dev_game/
 
