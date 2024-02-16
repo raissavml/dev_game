@@ -1,22 +1,44 @@
 body{
     font-family: 'Open Sans', sans-serif;
-    text-align: center;
+    text-align: start;
     background-image: url(./images/background.jpg);
     color:#3e3f3d;
 }
 
+.container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
 #board{
     background-color: var(--platinum);
-    border-bottom: 1px solid black;
+    padding: 2em;
     opacity: 95%;
+    border-radius: 20px;
+    margin-top: 3em;
 }
 
-h1{
-    margin: 2em;
+@media screen and (max-width: 840px){
+    #board{
+        width: 80%;
+    }
 }
 
-section{
+section h2{
+    text-align: center;
+}
+
+p{
+    margin: 0;
+}
+
+.text-background{
     margin: 1em;
+    background-color: rgba(215, 215, 215, 0.587);
+    border-radius: 20px;
+    padding: 1em;
 }
 
 :root{
