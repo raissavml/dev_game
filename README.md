@@ -5,7 +5,7 @@ Welcome to our jumping game project! This project is a simple yet entertaining g
 
 **How to Play**
 
-To begin playing the game, simply open the index.html file in your preferred web browser. Once the game loads, you'll take control of our character and your objective is to help it navigate through obstacles by jumping over them. Use the spacebar key on your keyboard to make the character jump. The longer you survive and the more obstacles you overcome, the higher your score will be. How far can you go?
+To begin playing the game, simply open the index.html file in your preferred web browser. Once the game loads, you'll take control of our character and your objective is to help it navigate through obstacles by jumping over them. Press enter to start the game and use the spacebar key on your keyboard to make the character jump. The longer you survive and the more obstacles you overcome, the higher your score will be. How far can you go?
 
 **Project Structure**
 

@@ -36,6 +36,8 @@ let velocityY = 0;
 const gravity = .4;
 
 let gameOver = false;
+let startGame = false;
+let animationStarted = false;
 let score = 0;
 
 window.onload = function () {
@@ -63,21 +65,54 @@ window.onload = function () {
     bug4Img = new Image();
     bug4Img.src = "./images/bug4.png";
 
-    requestAnimationFrame(update);
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'Enter') {
+            startGame = true;
+            animationStarted = true;
+            requestAnimationFrame(update);
+
+        }
+        
+    });
+    
+    // requestAnimationFrame(update);
     setInterval(placeBugs, 1000);
     document.addEventListener('keydown', moveDev);
+
+    board.addEventListener('click', function(event) {
+        if (gameOver) {
+            resetGame();
+        }
+    });
+    
+    document.addEventListener('keydown', function(event) {
+        if (gameOver && event.code === 'Space') {
+            resetGame();
+        }
+    });
+    
 }
 
 function update() {
-    requestAnimationFrame(update);
+    // requestAnimationFrame(update);
+    if (!startGame) {
+        return;
+    }
+
+    if (animationStarted) {
+        requestAnimationFrame(update);
+    }
     if (gameOver) {
         return;
     }
 
     context.clearRect(0, 0, board.width, board.height);
 
-    velocityY += gravity;
-    dev.y = Math.min(dev.y + velocityY, devY);
+    if (!gameOver) {
+        velocityY += gravity;
+        dev.y = Math.min(dev.y + velocityY, devY);
+    }
+
     context.drawImage(devImg, dev.x, dev.y, dev.width, dev.height);
 
     for (let i = 0; i < bugsArray.length; i++) {
@@ -91,10 +126,17 @@ function update() {
             context.fillStyle = 'black'
             context.font = '20px Open Sans';
             context.fillText(`Game Over`, 325, 120);
+            context.fillText(`Your score: ${score}`, 315, 150);
             devImg.src = "./images/devEnd.png"
             devImg.onload = function () {
                 context.drawImage(devImg, dev.x, dev.y, dev.width, dev.height);
             }
+
+            context.fillStyle = 'white';
+            context.fillRect(restartButton.x, restartButton.y, restartButton.width, restartButton.height);
+            context.fillStyle = 'black';
+            context.font = '15px Open Sans';
+            context.fillText(`Click to restart`, restartButton.x + 20, restartButton.y + 35);
         }
     }
 
@@ -174,4 +216,19 @@ function detectCollision(a, b) {
         a.x + a.width - 7 > b.x &&
         a.y < b.y + b.height - 7 &&
         a.y + a.height - 7 > b.y;
+}
+
+function resetGame() {
+    devImg.src = "./images/dev.png";
+    devImg.onload = function() {
+        context.drawImage(devImg, dev.x, dev.y, dev.width, dev.height);
+    };
+    gameOver = false;
+    score = 0;
+    bugsArray.length = 0;
+    dev.y = devY;
+    velocityY = 0;
+    velocityX = -8;
+    context.clearRect(0, 0, board.width, board.height);
+
 }
