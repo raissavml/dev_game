@@ -224,6 +224,7 @@ class Game {
         this.context.fillText(`Your score: ${this.score}`, 315, 150);
         this.devImg.src = "./images/devEnd.png";
         this.devImg.onload = () => {
+            this.context.clearRect(this.dev.x, this.dev.y, this.dev.width, this.dev.height);
             this.context.drawImage(this.devImg, this.dev.x, this.dev.y, this.dev.width, this.dev.height);
         }
 
