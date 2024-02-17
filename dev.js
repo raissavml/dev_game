@@ -67,6 +67,9 @@ class Game {
         this.startGame = true;
         this.animationStarted = true;
         requestAnimationFrame(this.update.bind(this));
+        if (!music.overworld.playing()) {
+          music.overworld.play();
+        }
       }
     });
 
@@ -75,11 +78,17 @@ class Game {
     this.board.addEventListener("click", () => {
       if (this.gameOver) {
         this.resetGame();
+        if (!music.overworld.playing()) {
+          music.overworld.play();
+        }
       }
     });
     document.addEventListener("keydown", (event) => {
       if (this.gameOver && event.code === "Space") {
         this.resetGame();
+        if (!music.overworld.playing()) {
+          music.overworld.play();
+        }
       }
     });
   }
@@ -118,6 +127,7 @@ class Game {
 
       if (this.detectCollision(this.dev, bug)) {
         this.handleCollision(bug);
+        music.overworld.pause();
       }
     }
 
@@ -143,6 +153,7 @@ class Game {
         this.dev.height
       );
       this.devImg.src = "./images/dev.png";
+      sfx.boost.play();
     } else if (e.code == "ArrowDown" && this.dev.y == this.devY) {
       this.dev.width = 50;
       this.dev.height = 50;
@@ -214,9 +225,12 @@ class Game {
       if (!bug.scored) {
         this.lives--; // Decrease lives on collision
         bug.scored = true; // Mark the bug as scored to avoid multiple decrement
+        sfx.push.play();
+
         if (this.lives <= 0) {
           this.gameOver = true;
           this.displayGameOver();
+          music.overworld.pause();
         }
       }
     }
