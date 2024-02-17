@@ -1,234 +1,243 @@
-let board;
-const boardWidth = 750;
-const boardHeight = 250;
-let context;
+class Game {
+    constructor() {
+        this.board;
+        this.boardWidth = 750;
+        this.boardHeight = 250;
+        this.context;
 
-let devHeight = 94;
-let devWidth = 94;
-let devX = 50;
-let devY = boardHeight - devHeight;
-let devImg;
+        this.devHeight = 94;
+        this.devWidth = 94;
+        this.devX = 50;
+        this.devY = this.boardHeight - this.devHeight;
+        this.devImg = new Image();
 
-const dev = {
-    x: devX,
-    y: null,
-    width: devWidth,
-    height: devHeight
-}
+        this.dev = {
+            x: this.devX,
+            y: null,
+            width: this.devWidth,
+            height: this.devHeight
+        };
 
-const bugsArray = [];
-const bug1Width = 55;
-const bug2Width = 69;
-const bug3Width = 102;
-const bug4Width = 69;
+        this.bugsArray = [];
+        this.bugWidths = [55, 69, 102, 69];
+        this.bugHeights = 70;
+        this.bugX = 700;
+        this.bugY = this.boardHeight - this.bugHeights;
+        this.bugImgs = [];
 
-const bugHeight = 70;
-const bugX = 700;
-const bugY = boardHeight - bugHeight;
+        this.velocityX = -8;
+        this.velocityY = 0;
+        this.gravity = 0.4;
 
-let bug1Img;
-let bug2Img;
-let bug3Img;
-let bug4Img;
+        this.gameOver = false;
+        this.startGame = false;
+        this.animationStarted = false;
+        this.score = 0;
+        this.lives = 5; // Initializing with 5 lives
+        this.level = 1;
+    }
 
-const velocityX = -8;
-let velocityY = 0;
-const gravity = .4;
+    initialize() {
+        this.board = document.getElementById("board");
+        this.board.height = this.boardHeight;
+        this.board.width = this.boardWidth;
+        this.context = this.board.getContext("2d");
 
-let gameOver = false;
-let startGame = false;
-let animationStarted = false;
-let score = 0;
+        this.devImg.src = "./images/dev.png";
+        this.devImg.onload = () => {
+            this.context.drawImage(this.devImg, this.dev.x, this.dev.y, this.dev.width, this.dev.height);
+        };
 
-window.onload = function () {
-    board = document.getElementById("board");
-    board.height = boardHeight;
-    board.width = boardWidth;
-
-    context = board.getContext("2d");
-
-    devImg = new Image();
-    devImg.src = "./images/dev.png";
-    devImg.onload = function() {
-        context.drawImage(devImg, dev.x, dev.y, dev.width, dev.height);
-    };
-
-    bug1Img = new Image();
-    bug1Img.src = "./images/bug1.png";
-
-    bug2Img = new Image();
-    bug2Img.src = "./images/bug2.png";
-
-    bug3Img = new Image();
-    bug3Img.src = "./images/bug3.png";
-
-    bug4Img = new Image();
-    bug4Img.src = "./images/bug4.png";
-
-    document.addEventListener('keydown', function(event) {
-        if (event.code === 'Enter') {
-            startGame = true;
-            animationStarted = true;
-            requestAnimationFrame(update);
-
+        // Load bug images
+        for (let i = 1; i <= 4; i++) {
+            let img = new Image();
+            img.src = `./images/bug${i}.png`;
+            this.bugImgs.push(img);
         }
-        
-    });
-    
-    // requestAnimationFrame(update);
-    setInterval(placeBugs, 1000);
-    document.addEventListener('keydown', moveDev);
 
-    board.addEventListener('click', function(event) {
-        if (gameOver) {
-            resetGame();
-        }
-    });
-    
-    document.addEventListener('keydown', function(event) {
-        if (gameOver && event.code === 'Space') {
-            resetGame();
-        }
-    });
-    
-}
-
-function update() {
-    // requestAnimationFrame(update);
-    if (!startGame) {
-        return;
-    }
-
-    if (animationStarted) {
-        requestAnimationFrame(update);
-    }
-    if (gameOver) {
-        return;
-    }
-
-    context.clearRect(0, 0, board.width, board.height);
-
-    if (!gameOver) {
-        velocityY += gravity;
-        dev.y = Math.min(dev.y + velocityY, devY);
-    }
-
-    context.drawImage(devImg, dev.x, dev.y, dev.width, dev.height);
-
-    for (let i = 0; i < bugsArray.length; i++) {
-        const bug = bugsArray[i];
-        bug.x += velocityX;
-        context.drawImage(bug.img, bug.x, bug.y, bug.width, bug.height);
-        
-        if (detectCollision(dev, bug)) {
-            context.clearRect(dev.x, dev.y, dev.width, dev.height);
-            gameOver = true;
-            context.fillStyle = 'black'
-            context.font = '20px Open Sans';
-            context.fillText(`Game Over`, 325, 120);
-            context.fillText(`Your score: ${score}`, 315, 150);
-            devImg.src = "./images/devEnd.png"
-            devImg.onload = function () {
-                context.drawImage(devImg, dev.x, dev.y, dev.width, dev.height);
+        document.addEventListener('keydown', (event) => {
+            if (!this.startGame && event.code === 'Enter') {
+                this.startGame = true;
+                this.animationStarted = true;
+                requestAnimationFrame(this.update.bind(this));
             }
+        });
 
-            context.fillStyle = 'white';
-            context.fillRect(restartButton.x, restartButton.y, restartButton.width, restartButton.height);
-            context.fillStyle = 'black';
-            context.font = '15px Open Sans';
-            context.fillText(`Click to restart`, restartButton.x + 20, restartButton.y + 35);
+        setInterval(this.placeBugs.bind(this), 1000);
+        document.addEventListener('keydown', this.moveDev.bind(this));
+        this.board.addEventListener('click', () => {
+            if (this.gameOver) {
+                this.resetGame();
+            }
+        });
+        document.addEventListener('keydown', (event) => {
+            if (this.gameOver && event.code === 'Space') {
+                this.resetGame();
+            }
+        });
+    }
+
+    update() {
+        if (!this.startGame) {
+            return;
+        }
+
+        if (this.animationStarted) {
+            requestAnimationFrame(this.update.bind(this));
+        }
+        if (this.gameOver) {
+            return;
+        }
+
+        this.context.clearRect(0, 0, this.board.width, this.board.height);
+
+        if (!this.gameOver) {
+            this.velocityY += this.gravity;
+            this.dev.y = Math.min(this.dev.y + this.velocityY, this.devY);
+        }
+
+        this.context.drawImage(this.devImg, this.dev.x, this.dev.y, this.dev.width, this.dev.height);
+
+        for (let i = 0; i < this.bugsArray.length; i++) {
+            const bug = this.bugsArray[i];
+            bug.x += this.velocityX;
+            this.context.drawImage(bug.img, bug.x, bug.y, bug.width, bug.height);
+
+            if (this.detectCollision(this.dev, bug)) {
+                this.handleCollision(bug);
+            }
+        }
+
+        this.displayScore();
+        this.displayLives(); // Displaying lives
+        this.checkLevelCompletion();
+    }
+
+    moveDev(e) {
+        if (this.gameOver) {
+            return;
+        }
+
+        if ((e.code == 'Space' || e.code == 'ArrowUp') && this.dev.y == this.devY) {
+            this.dev.width = this.devWidth;
+            this.dev.height = this.devHeight;
+            this.devY = this.boardHeight - this.devHeight;
+            this.velocityY = -10;
+            this.context.clearRect(this.dev.x, this.dev.y, this.dev.width, this.dev.height);
+            this.devImg.src = "./images/dev.png"
+        } else if (e.code == 'ArrowDown' && this.dev.y == this.devY) {
+            this.dev.width = 50;
+            this.dev.height = 50;
+            this.devY = 200;
+            this.context.clearRect(this.dev.x, this.dev.y, this.dev.width, this.dev.height);
+            this.devImg.src = "./images/rubber-duck.png"
         }
     }
 
-    context.fillStyle = 'black';
-    context.font = '20px Open Sans';
-    context.fillText(`Score: ${score}`, 5, 20);
-    score++;
+    placeBugs() {
+        if (this.gameOver) {
+            return;
+        }
 
-}
+        const bug = {
+            img: null,
+            x: this.bugX,
+            y: null,
+            width: null,
+            height: this.bugHeights,
+            scored: false,
+        };
 
-function moveDev(e) {
-    if (gameOver) {
-        return;
+        const placeBugsChance = Math.random();
+
+        if (placeBugsChance > .70) {
+            bug.img = this.bugImgs[2];
+            bug.width = this.bugWidths[2];
+            bug.y = this.bugY;
+            this.bugsArray.push(bug);
+        } else if (placeBugsChance > .50) {
+            bug.img = this.bugImgs[1];
+            bug.width = this.bugWidths[1];
+            bug.y = this.bugY;
+            this.bugsArray.push(bug);
+        } else if (placeBugsChance > .30) {
+            bug.img = this.bugImgs[0];
+            bug.width = this.bugWidths[0];
+            bug.y = this.bugY;
+            this.bugsArray.push(bug);
+        } else if (placeBugsChance > 0.01) {
+            bug.img = this.bugImgs[3];
+            bug.width = this.bugWidths[3];
+            bug.y = 100;
+            this.bugsArray.push(bug);
+        }
+
+        if (this.bugsArray.length > 5) {
+            this.bugsArray.shift();
+        }
     }
 
-    if ((e.code == 'Space' || e.code == 'ArrowUp') && dev.y == devY) {
-        dev.width = devWidth;
-        dev.height = devHeight;
-        devY = boardHeight-devHeight;
-        velocityY = -10;
-        context.clearRect(dev.x, dev.y, dev.width, dev.height);
-        devImg.src = "./images/dev.png" 
-    } else if (e.code == 'ArrowDown' && dev.y == devY) {
-        dev.width = 50;
-        dev.height = 50;
-        devY = 200;
-        context.clearRect(dev.x, dev.y, dev.width, dev.height);
-        devImg.src = "./images/rubber-duck.png"      
-    } 
-}
-
-function placeBugs() {
-    if (gameOver) {
-        return;
+    detectCollision(a, b) {
+        return a.x < b.x + b.width - 7 &&
+            a.x + a.width - 7 > b.x &&
+            a.y < b.y + b.height - 7 &&
+            a.y + a.height - 7 > b.y;
     }
 
-    const bug = {
-        img: null,
-        x: bugX,
-        y: null,
-        width: null,
-        height: bugHeight,
-        scored: false,
+    handleCollision(bug) {
+        this.lives--; // Decrease lives on collision
+        if (this.lives <= 0) {
+            this.gameOver = true;
+            this.displayGameOver();
+        }
     }
 
-    const placeBugsChance = Math.random();
-
-    if (placeBugsChance > .70) {
-        bug.img = bug3Img;
-        bug.width = bug3Width;
-        bug.y = bugY;
-        bugsArray.push(bug);
-    } else if (placeBugsChance > .50) {
-        bug.img = bug2Img;
-        bug.width = bug2Width;
-        bug.y = bugY;
-        bugsArray.push(bug);        
-    } else if (placeBugsChance > .30) {
-        bug.img = bug1Img;
-        bug.width = bug1Width;
-        bug.y = bugY;
-        bugsArray.push(bug);
-    } else if (placeBugsChance > 0.01) {
-        bug.img = bug4Img;
-        bug.width = bug4Width;
-        bug.y = 100;
-        bugsArray.push(bug);   
+    resetGame() {
+        this.devImg.src = "./images/dev.png";
+        this.gameOver = false;
+        this.score = 0;
+        this.lives = 5; // Reset lives
+        this.bugsArray.length = 0;
+        this.dev.y = this.devY;
+        this.velocityY = 0;
+        this.velocityX = -8;
+        this.context.clearRect(0, 0, this.board.width, this.board.height);
     }
 
-    if (bugsArray.length > 5) {
-        bugsArray.shift();
+    displayScore() {
+        this.context.fillStyle = 'black';
+        this.context.font = '20px Open Sans';
+        this.context.fillText(`Score: ${this.score}`, 5, 20);
+        this.score++;
+    }
+
+    displayLives() {
+        this.context.fillStyle = 'black';
+        this.context.font = '20px Open Sans';
+        this.context.fillText(`Lives: ${this.lives}`, 650, 20);
+    }
+
+    displayGameOver() {
+        this.context.fillStyle = 'black'
+        this.context.font = '20px Open Sans';
+        this.context.fillText(`Game Over`, 325, 120);
+        this.context.fillText(`Your score: ${this.score}`, 315, 150);
+        this.devImg.src = "./images/devEnd.png";
+        this.devImg.onload = () => {
+            this.context.drawImage(this.devImg, this.dev.x, this.dev.y, this.dev.width, this.dev.height);
+        }
+
+        this.context.fillStyle = 'white';
+        this.context.fillRect(restartButton.x, restartButton.y, restartButton.width, restartButton.height);
+        this.context.fillStyle = 'black';
+        this.context.font = '15px Open Sans';
+        this.context.fillText(`Click to restart`, restartButton.x + 20, restartButton.y + 35);
+    }
+
+    checkLevelCompletion() {
+        // Add level completion logic here
     }
 }
 
-function detectCollision(a, b) {
-    return a.x < b.x + b.width - 7 &&
-        a.x + a.width - 7 > b.x &&
-        a.y < b.y + b.height - 7 &&
-        a.y + a.height - 7 > b.y;
-}
-
-function resetGame() {
-    devImg.src = "./images/dev.png";
-    devImg.onload = function() {
-        context.drawImage(devImg, dev.x, dev.y, dev.width, dev.height);
-    };
-    gameOver = false;
-    score = 0;
-    bugsArray.length = 0;
-    dev.y = devY;
-    velocityY = 0;
-    velocityX = -8;
-    context.clearRect(0, 0, board.width, board.height);
-
-}
+const game = new Game();
+game.initialize();
