@@ -27,12 +27,7 @@ body{
     display: flex;
     align-items: center;
     flex-direction: column;
-}
-
-@media screen and (max-width: 840px){
-    #board{
-        width: 80%;
-    }
+    width: 80%;
 }
 
 .introduction{
@@ -60,11 +55,30 @@ ol{
     background-color: var(--background);
     border-radius: 20px;
     padding: 1em;
-    width: 50%;
+    width: 100%;
     border: 3px  dashed;
     box-shadow: 5px 8px 15px rgb(119, 119, 119)
 }
 
 :root{
     --background: rgba(255, 250, 240, 0.9);
+}
+
+@media screen and (max-width: 840px){
+    #board{
+        width: 80%;
+    }
+
+    .instruction{
+        width: 100%;
+    }
+
+}
+
+@media screen and (min-width: 998px){
+
+    .instruction{
+        width: 780px;
+    }
+
 }
