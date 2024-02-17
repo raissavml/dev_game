@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Anta&display=swap');
+
 body{
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Anta", sans-serif;
     text-align: start;
     background-image: url(./images/background.jpg);
     color:#3e3f3d;
@@ -13,11 +15,18 @@ body{
 }
 
 #board{
-    background-color: var(--platinum);
+    background-color: var(--background);
     padding: 2em;
     opacity: 95%;
     border-radius: 20px;
-    margin-top: 3em;
+    margin-top: 0.5em;
+    box-shadow: -5px -8px 15px rgba(255, 255, 255, 0.1),
+    5px 5px 15px rgba(0, 0, 0, 0.5);}
+
+.container-direction{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 @media screen and (max-width: 840px){
@@ -26,21 +35,37 @@ body{
     }
 }
 
-section h2{
+.introduction{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1{
+    font-size: 3em;
+    margin: 0.5em 0 0 0;
     text-align: center;
 }
 
 p{
-    margin: 0;
+    width: 50%;
 }
 
-.text-background{
+ol{
+    padding-left: 2em;
+}
+
+.instruction{
     margin: 1em;
-    background-color: rgba(215, 215, 215, 0.587);
+    background-color: var(--background);
     border-radius: 20px;
     padding: 1em;
+    width: 50%;
+    border: 3px  dashed;
+    box-shadow: 5px 8px 15px rgb(119, 119, 119)
 }
 
 :root{
-    --platinum: #bebebdf6;
+    --game-background: rgba(215, 215, 215, 0.8);
+    --background: rgba(255, 250, 240, 0.9);
 }
