@@ -283,17 +283,17 @@ class Game {
       );
     };
 
-    this.context.fillStyle = "white";
+    this.context.fillStyle = "#2a2a2a";
     this.context.fillRect(
       restartButton.x,
       restartButton.y,
       restartButton.width,
       restartButton.height
     );
-    this.context.fillStyle = "black";
-    this.context.font = "15px Open Sans";
+    this.context.fillStyle = "white";
+    this.context.font = "16px Open Sans";
     this.context.fillText(
-      `Click to restart`,
+      `Restart`,
       restartButton.x + 20,
       restartButton.y + 35
     );
@@ -305,6 +305,12 @@ class Game {
 }
 
 const game = new Game();
+const restartButton = {
+  x: 330,
+  y: 170,
+  width: 85,
+  height: 50,
+};
 game.initialize();
 
 // SOUND ///
