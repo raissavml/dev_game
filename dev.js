@@ -33,7 +33,8 @@ class Game {
         this.startGame = false;
         this.animationStarted = false;
         this.score = 0;
-        this.lives = 5; // Initializing with 5 lives
+        this.lives = 5;
+        this.maxLives = 5;
         this.level = 1;
     }
 
@@ -185,10 +186,15 @@ class Game {
     }
 
     handleCollision(bug) {
-        this.lives--; // Decrease lives on collision
-        if (this.lives <= 0) {
-            this.gameOver = true;
-            this.displayGameOver();
+        if (this.detectCollision(this.dev, bug)) {
+            if (!bug.scored) {
+                this.lives--; // Decrease lives on collision
+                bug.scored = true; // Mark the bug as scored to avoid multiple decrement
+                if (this.lives <= 0) {
+                    this.gameOver = true;
+                    this.displayGameOver();
+                }
+            }
         }
     }
 
@@ -214,7 +220,7 @@ class Game {
     displayLives() {
         this.context.fillStyle = 'black';
         this.context.font = '20px Open Sans';
-        this.context.fillText(`Lives: ${this.lives}`, 650, 20);
+        this.context.fillText(`Lives: ${this.lives} / ${this.maxLives}`, 650, 20);
     }
 
     displayGameOver() {
