@@ -33,7 +33,8 @@ class Game {
     this.startGame = false;
     this.animationStarted = false;
     this.score = 0;
-    this.lives = 5; // Initializing with 5 lives
+    this.lives = 5;
+    this.maxLives = 5;
     this.level = 1;
   }
 
@@ -66,7 +67,6 @@ class Game {
         this.startGame = true;
         this.animationStarted = true;
         requestAnimationFrame(this.update.bind(this));
-
         if (!music.overworld.playing()) {
           music.overworld.play();
         }
@@ -102,6 +102,7 @@ class Game {
       requestAnimationFrame(this.update.bind(this));
     }
     if (this.gameOver) {
+      music.overworld.pause();
       return;
     }
 
@@ -127,7 +128,9 @@ class Game {
 
       if (this.detectCollision(this.dev, bug)) {
         this.handleCollision(bug);
-        music.overworld.pause();
+      }
+      if (!music.overworld.playing()) {
+        music.overworld.play();
       }
     }
 
@@ -221,12 +224,19 @@ class Game {
   }
 
   handleCollision(bug) {
-    this.lives--; // Decrease lives on collision
-    if (this.lives <= 0) {
-      this.gameOver = true;
-      this.displayGameOver();
+    if (this.detectCollision(this.dev, bug)) {
+      if (!bug.scored) {
+        this.lives--; // Decrease lives on collision
+        bug.scored = true; // Mark the bug as scored to avoid multiple decrement
+        sfx.push.play();
+
+        if (this.lives <= 0) {
+          this.gameOver = true;
+          this.displayGameOver();
+          music.overworld.pause();
+        }
+      }
     }
-    sfx.push.play();
   }
 
   resetGame() {
@@ -251,7 +261,7 @@ class Game {
   displayLives() {
     this.context.fillStyle = "black";
     this.context.font = "20px Open Sans";
-    this.context.fillText(`Lives: ${this.lives}`, 650, 20);
+    this.context.fillText(`Lives: ${this.lives} / ${this.maxLives}`, 650, 20);
   }
 
   displayGameOver() {
@@ -276,17 +286,17 @@ class Game {
       );
     };
 
-    this.context.fillStyle = "white";
+    this.context.fillStyle = "#2a2a2a";
     this.context.fillRect(
       restartButton.x,
       restartButton.y,
       restartButton.width,
       restartButton.height
     );
-    this.context.fillStyle = "black";
-    this.context.font = "15px Open Sans";
+    this.context.fillStyle = "white";
+    this.context.font = "16px Open Sans";
     this.context.fillText(
-      `Click to restart`,
+      `Restart`,
       restartButton.x + 20,
       restartButton.y + 35
     );
@@ -298,6 +308,12 @@ class Game {
 }
 
 const game = new Game();
+const restartButton = {
+  x: 330,
+  y: 170,
+  width: 85,
+  height: 50,
+};
 game.initialize();
 
 // SOUND ///
@@ -308,9 +324,6 @@ let sfx = {
   boost: new Howl({
     src: ["https://assets.codepen.io/21542/howler-sfx-levelup.mp3"],
     loop: false,
-    onend: function () {
-      console.log("Done playing sfx!");
-    },
   }),
 };
 
