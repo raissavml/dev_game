@@ -102,6 +102,7 @@ class Game {
       requestAnimationFrame(this.update.bind(this));
     }
     if (this.gameOver) {
+      music.overworld.pause();
       return;
     }
 
@@ -127,7 +128,6 @@ class Game {
 
       if (this.detectCollision(this.dev, bug)) {
         this.handleCollision(bug);
-        music.overworld.pause();
       }
     }
 
